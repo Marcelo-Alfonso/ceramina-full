@@ -1,0 +1,38 @@
+# --- General ---
+.DS_Store
+*.log
+
+# --- Backend (Python/FastAPI/Alembic) ---
+# Entorno virtual
+backend/venv/
+backend/env/
+
+# Variables de entorno (Contienen credenciales sensibles)
+backend/.env
+
+# Caché de Python
+backend/**/__pycache__/
+backend/**/*.py[cod]
+
+# IDEs
+backend/.vscode/
+backend/.idea/
+
+# --- Frontend (Next.js/Node) ---
+# Dependencias
+frontend/node_modules/
+
+# Build de Next.js
+frontend/.next/
+frontend/out/
+
+# Variables de entorno
+frontend/.env*.local
+
+# Logs de npm
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Configuración opcional de TypeScript/Next
+frontend/next-env.d.ts
