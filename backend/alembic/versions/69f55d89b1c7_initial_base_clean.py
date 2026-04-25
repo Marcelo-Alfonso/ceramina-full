@@ -31,6 +31,7 @@ def upgrade():
         sa.Column("image", sa.Text(), nullable=True),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("slug", sa.Text(), nullable=False),
+        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.text("true")),
         sa.Column("created_at", sa.TIMESTAMP(timezone=True), server_default=sa.text("now()")),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -82,12 +83,58 @@ def upgrade():
         sa.ForeignKeyConstraint(["product_id"], ["products.id"]),
         sa.PrimaryKeyConstraint("id"),
     )
+    op.create_table(
+        "discounts",
+        sa.Column("id", sa.Uuid(), primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("product_id", sa.BigInteger(), sa.ForeignKey("products.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("name", sa.Text(), nullable=False),
+
+        sa.Column(
+            "discount_type",
+            sa.Text(),
+            sa.CheckConstraint("discount_type IN ('percentage', 'fixed')"),
+            nullable=False
+        ),
+        sa.Column("discount_value", sa.Integer(), nullable=False),
+
+        sa.Column("starts_at", sa.TIMESTAMP(timezone=True), nullable=False),
+        sa.Column("ends_at", sa.TIMESTAMP(timezone=True), nullable=False),
+
+        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.text("true")),
+
+        sa.Column("created_at", sa.TIMESTAMP(timezone=True), server_default=sa.text("now()")),
+    )
+
+    # Constraint: fechas válidas
+    op.create_check_constraint(
+        "ck_discounts_valid_dates",
+        "discounts",
+        "ends_at > starts_at"
+    )
+
+
+    # Policy: lectura pública solo descuentos activos
+    op.execute("""
+        CREATE POLICY "Public can read active discounts"
+        ON discounts
+        FOR SELECT
+        USING (
+            is_active = true
+            AND now() >= starts_at
+            AND now() <= ends_at
+        );
+    """)
+    
+
+
 
     #Habilitación de row level security
     op.execute("ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;")
     op.execute("ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;")
     op.execute("ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;")
     op.execute("ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;")
+    op.execute("ALTER TABLE public.discounts ENABLE ROW LEVEL SECURITY;")
+
 
     #Creación de politicas de productos
     op.execute("""

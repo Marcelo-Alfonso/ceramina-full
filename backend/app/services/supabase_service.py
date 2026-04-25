@@ -1,6 +1,8 @@
 import logging
 from supabase import create_client, Client
 from app.core.config import settings
+from datetime import datetime
+
 
 logger = logging.getLogger(__name__)
 
@@ -12,15 +14,61 @@ supabase: Client = create_client(
 
 async def get_products_by_ids(product_ids: list[int]):
     try:
-        res = supabase.table("products") \
-            .select("*") \
-            .in_("id", product_ids) \
-            .execute()
+        if not product_ids:
+            return []
 
-        return res.data or []
+        now = datetime.utcnow().isoformat()
+
+        products_res = (
+            supabase
+            .table("products")
+            .select("id, name, price, is_active")
+            .in_("id", product_ids)
+            .eq("is_active", True)
+            .execute()
+        )
+
+        products = products_res.data or []
+
+        if not products:
+            return []
+
+        discounts_res = (
+            supabase
+            .table("discounts")
+            .select("*")
+            .in_("product_id", product_ids)
+            .eq("is_active", True)
+            .lte("starts_at", now)
+            .gte("ends_at", now)
+            .execute()
+        )
+
+        discounts = discounts_res.data or []
+
+        discount_map = {d["product_id"]: d for d in discounts}
+
+        final_products = []
+
+        for p in products:
+            price = p["price"]
+            discount = discount_map.get(p["id"])
+
+            if discount:
+                if discount["discount_type"] == "percentage":
+                    price = int(price * (1 - discount["discount_value"] / 100))
+                elif discount["discount_type"] == "fixed":
+                    price = max(0, price - discount["discount_value"])
+
+            p["final_price"] = price
+            p["original_price"] = p["price"]
+
+            final_products.append(p)
+
+        return final_products
 
     except Exception:
-        logger.error("Error fetching products", exc_info=True)
+        logger.error("Error fetching products with discounts", exc_info=True)
         return []
 
 
@@ -170,6 +218,7 @@ async def get_order_items_by_order_id(order_id: str):
                 id,
                 quantity,
                 price,
+                original_price,
                 products (
                     id,
                     name,

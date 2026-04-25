@@ -17,6 +17,7 @@ export default async function ProductsSectionHero() {
   const { data: products, error } = await supabase
     .from("products")
     .select("id, name, price, image, slug")
+    .eq("is_active", true)
     .order('created_at', { ascending: false })
     .returns<Product[]>();
 

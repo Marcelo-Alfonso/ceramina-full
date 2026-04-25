@@ -73,31 +73,36 @@ export default function CartPage() {
             {cart.map((item) => (
               <div
                 key={item.id}
-                className="bg-white p-4 md:p-6 rounded-3xl flex gap-6 items-center border border-[#E6B9B3]/20 shadow-sm transition-hover hover:shadow-md"
+                className="bg-white p-4 md:p-6 rounded-3xl flex gap-6 items-center border border-[#E6B9B3]/20 shadow-sm transition-all hover:shadow-md"
               >
-                <div className="relative w-24 h-24 bg-[#F8F4ED] rounded-2xl overflow-hidden flex-shrink-0">
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    fill
-                    className="object-contain p-2"
-                  />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-serif text-lg text-[#756C64] truncate">
-                    {item.name}
-                  </h3>
-                  <p className="text-[#A7B39B] font-medium">
-                    {formatCLP(item.price)}
-                  </p>
-                  
-                  <div className="flex items-center gap-3 mt-3 md:hidden">
-                    <button onClick={() => decreaseQty(item.id)} className="p-1.5 rounded-lg border border-[#E6B9B3] text-[#756C64]"><Minus size={14}/></button>
-                    <span className="font-bold text-sm">{item.quantity}</span>
-                    <button onClick={() => increaseQty(item.id)} className="p-1.5 rounded-lg border border-[#E6B9B3] text-[#756C64]"><Plus size={14}/></button>
+                <Link 
+                  href={`/productos/${item.slug}`} 
+                  className="flex flex-1 gap-6 items-center min-w-0 group"
+                >
+                  <div className="relative w-24 h-24 bg-[#F8F4ED] rounded-2xl overflow-hidden flex-shrink-0 transition-transform group-hover:scale-105">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      className="object-contain p-2"
+                    />
                   </div>
-                </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-serif text-lg text-[#756C64] truncate group-hover:text-[#E6B9B3] transition-colors">
+                      {item.name}
+                    </h3>
+                    <p className="text-[#A7B39B] font-medium">
+                      {formatCLP(item.price)}
+                    </p>
+
+                    <div className="flex items-center gap-3 mt-3 md:hidden" onClick={(e) => e.preventDefault()}>
+                      <button onClick={() => decreaseQty(item.id)} className="p-1.5 rounded-lg border border-[#E6B9B3] text-[#756C64] hover:bg-[#F8F4ED]"><Minus size={14}/></button>
+                      <span className="font-bold text-sm">{item.quantity}</span>
+                      <button onClick={() => increaseQty(item.id)} className="p-1.5 rounded-lg border border-[#E6B9B3] text-[#756C64] hover:bg-[#F8F4ED]"><Plus size={14}/></button>
+                    </div>
+                  </div>
+                </Link>
 
                 <div className="hidden md:flex items-center gap-4 bg-[#F8F4ED] p-2 rounded-xl border border-[#E6B9B3]/30">
                   <button

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Prewarm from "@/components/Prewarm";
 import AddToCartButton from "@/components/AddToCartButton";
-import { ShoppingBag, ArrowLeft, MapPin, Truck } from "lucide-react";
+import { ArrowLeft, MapPin, Truck, Sparkles } from "lucide-react";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -39,7 +39,8 @@ export async function generateStaticParams() {
   
   const { data: products } = await supabase
     .from("products")
-    .select("slug");
+    .select("slug")
+    .eq("is_active", true);
 
   if (!products) return [];
   return products.map((product) => ({ slug: product.slug }));
@@ -57,10 +58,27 @@ export default async function ProductPage({ params }: Props) {
 
   if (error || !product) return notFound();
 
-  const phone = "56940090207";
+  const now = new Date().toISOString();
+  const { data: discount } = await supabase
+    .from('discounts')
+    .select('*')
+    .eq('product_id', product.id)
+    .eq('is_active', true)
+    .lte('starts_at', now)
+    .gte('ends_at', now)
+    .maybeSingle();
 
+  const discountedPrice = discount 
+    ? (discount.discount_type === 'percentage' 
+        ? product.price * (1 - discount.discount_value / 100) 
+        : Math.max(0, product.price - discount.discount_value))
+    : product.price;
+
+  const hasDiscount = !!discount;
+
+  const phone = "56986813194";
   const message = encodeURIComponent(
-    `Hola! Me interesa la pieza: ${product.name} (${formatCLP(product.price)}).`
+    `Hola! Me interesa la pieza: ${product.name} (${formatCLP(discountedPrice)}).`
   );
 
   const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
@@ -81,8 +99,13 @@ export default async function ProductPage({ params }: Props) {
         <main className="bg-white rounded-[2.5rem] shadow-sm border border-[#E6B9B3]/20 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
 
-            <div className="relative aspect-square bg-[#FDFBF7] flex items-center justify-center p-6 md:p-10">
-              <div className="relative w-full h-full">
+            <div className="bg-[#FDFBF7] p-6 md:p-10 flex flex-col items-center justify-center gap-4">
+              <div className="relative w-full aspect-square">
+                {hasDiscount && (
+                  <div className="absolute top-0 right-0 bg-[#FFA195] text-white text-xs font-black px-4 py-2 rounded-2xl z-20 shadow-lg animate-pulse">
+                    OFERTA
+                  </div>
+                )}
                 <Image
                   src={product.image}
                   alt={product.name}
@@ -91,22 +114,53 @@ export default async function ProductPage({ params }: Props) {
                   className="object-contain drop-shadow-xl transition-transform duration-700 hover:scale-105"
                 />
               </div>
+
+              <div className="text-center text-sm text-[#756C64]/80 max-w-xs">
+                <p>
+                  Esta figura de porcelana fría requiere cuidados especiales para mantener su calidad y duración.
+                </p>
+                <Link 
+                  href="/cuidados"
+                  className="text-[#FFA195] font-semibold underline hover:opacity-80 transition"
+                >
+                  Ver cuidados
+                </Link>
+              </div>
             </div>
 
             <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center space-y-8">
-
               <header className="space-y-4">
-                <span className="inline-block bg-[#E6B9B3]/15 text-[#E6B9B3] px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.2em]">
-                  Pieza única artesanal
-                </span>
+                <div className="flex flex-wrap gap-2">
+                  <span className="inline-block bg-[#E6B9B3]/15 text-[#E6B9B3] px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.2em]">
+                    Pieza única artesanal
+                  </span>
+                  {hasDiscount && (
+                    <span className="inline-flex items-center gap-1.5 bg-[#A7B39B] text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm">
+                      <Sparkles className="w-3 h-3" /> {discount.name}
+                    </span>
+                  )}
+                </div>
 
                 <h1 className="text-4xl md:text-5xl font-serif text-[#756C64] leading-tight">
                   {product.name}
                 </h1>
 
-                <p className="text-3xl font-semibold text-[#FFA195]">
-                  {formatCLP(product.price)}
-                </p>
+                <div className="flex flex-col">
+                  {hasDiscount ? (
+                    <div className="flex flex-col gap-1">
+                      <span className="text-lg text-gray-400 line-through decoration-[#FFA195]/40 font-medium">
+                         Antes: {formatCLP(product.price)}
+                      </span>
+                      <p className="text-4xl font-black text-[#FFA195] tracking-tighter">
+                        {formatCLP(discountedPrice)}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-3xl font-semibold text-[#FFA195]">
+                      {formatCLP(product.price)}
+                    </p>
+                  )}
+                </div>
               </header>
 
               <p className="text-[#756C64]/80 leading-relaxed text-lg whitespace-pre-line">
@@ -115,11 +169,10 @@ export default async function ProductPage({ params }: Props) {
               </p>
 
               <div className="bg-[#FDF7F5] border border-[#E6B9B3]/30 rounded-2xl p-5 space-y-3">
-
                 <div className="flex items-start gap-3 text-sm text-[#756C64]">
                   <Truck className="w-5 h-5 mt-0.5 text-[#FFA195]" />
                   <p>
-                    Envíos disponibles <strong>solo dentro del sector urbano de Arica</strong>.  
+                    Envíos disponibles <strong>solo dentro del sector urbano de Arica</strong>.   
                     Para envíos fuera de esta zona, por favor consultar vía WhatsApp.
                   </p>
                 </div>
@@ -131,11 +184,9 @@ export default async function ProductPage({ params }: Props) {
                     <strong>Agustín Edwards 1961</strong>
                   </p>
                 </div>
-
               </div>
 
               <div className="flex flex-col gap-4 pt-2">
-
                 <Link href={`/checkout/${product.slug}`}>
                   <button className="w-full bg-[#756C64] hover:bg-[#5d564f] text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-[#756C64]/10 transition-all active:scale-[0.98]">
                     Comprar ahora
@@ -143,12 +194,11 @@ export default async function ProductPage({ params }: Props) {
                 </Link>
 
                 <div className="flex gap-3">
-
                   <AddToCartButton
                     product={{
                       id: product.id,
                       name: product.name,
-                      price: product.price,
+                      price: discountedPrice,
                       image: product.image,
                       slug: product.slug,
                     }}
@@ -156,11 +206,9 @@ export default async function ProductPage({ params }: Props) {
 
                   <Link href="/cart" className="flex-1">
                     <button className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-[#756C64]/40 hover:bg-[#756C64]/5 transition-all font-semibold text-[#756C64]">
-                      <ShoppingBag className="w-5 h-5" />
                       Ver carrito
                     </button>
                   </Link>
-
                 </div>
 
                 <a

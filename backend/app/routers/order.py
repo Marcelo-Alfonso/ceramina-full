@@ -79,9 +79,7 @@ async def get_order_items_by_token(token: str = Query(...)):
             "shipping_cost": order["shipping_cost"],
             "address": order["address"],
             "phone": order["phone"],
-
             "amount": order["amount"],
-
             "items": items
         }
 

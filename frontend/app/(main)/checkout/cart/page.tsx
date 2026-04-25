@@ -41,12 +41,20 @@ export default function CheckoutCartPage() {
     }
   }, []);
 
+  const FREE_SHIPPING_THRESHOLD = 20000;
+  const BASE_SHIPPING_COST = 3000;
+
   const subtotal = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
-  const shippingCost = shippingMethod === "pickup" ? 0 : 3000;
+  const hasFreeShipping =
+    shippingMethod === "pickup" || subtotal >= FREE_SHIPPING_THRESHOLD;
+
+  const shippingCost = hasFreeShipping ? 0 : BASE_SHIPPING_COST;
+
+  const total = subtotal + shippingCost;
 
   const handlePayment = async (
     formData: FormData,
@@ -107,7 +115,7 @@ export default function CheckoutCartPage() {
           <CheckoutForm
             isLoaded={isLoaded}
             onSubmit={handlePayment}
-            total={subtotal + shippingCost}
+            total={total}
             shippingMethod={shippingMethod}
             setShippingMethod={setShippingMethod}
           />

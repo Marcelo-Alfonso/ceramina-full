@@ -48,6 +48,7 @@ export async function createProduct(formData: FormData) {
   const { error: dbError } = await supabase.from("products").insert({
     ...validatedFields.data,
     image: imageUrl,
+    is_active: true,
   })
 
   if (dbError) {
@@ -96,38 +97,26 @@ export async function deleteProduct(formData: FormData) {
 
   const id = Number(formData.get("id"))
 
-  const { data: product, error: productError } = await supabase
-    .from("products")
-    .select("image")
-    .eq("id", id)
-    .single()
-
-  if (productError) throw new Error(productError.message)
-
-  if (product?.image) {
-    try {
-      const marker = `/storage/v1/object/public/${BUCKET}/`
-      const index = product.image.indexOf(marker)
-
-      if (index !== -1) {
-        const path = product.image.substring(index + marker.length)
-
-        const { error: deleteError } = await supabase.storage
-          .from(BUCKET)
-          .remove([path])
-
-        if (deleteError) {
-          console.warn("No se pudo eliminar imagen:", deleteError.message)
-        }
-      }
-    } catch {
-      console.warn("Error procesando eliminación de imagen")
-    }
-  }
+  if (!id) throw new Error("ID inválido")
 
   const { error } = await supabase
     .from("products")
-    .delete()
+    .update({ is_active: false })
+    .eq("id", id)
+
+  if (error) throw new Error(error.message)
+
+  revalidatePath("/admin/products")
+}
+export async function restoreProduct(formData: FormData) {
+  const supabase = await createClient()
+
+  const id = Number(formData.get("id"))
+
+  const { error } = await supabase
+    .from("products")
+    .update({ is_active: true })
+
     .eq("id", id)
 
   if (error) throw new Error(error.message)

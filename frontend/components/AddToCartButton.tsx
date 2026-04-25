@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ShoppingBag, Check } from "lucide-react";
 
 type Product = {
   id: number;
@@ -21,7 +22,6 @@ export default function AddToCartButton({
 
   const handleAddToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
     const existing = cart.find((item: any) => item.id === product.id);
 
     if (existing) {
@@ -31,19 +31,22 @@ export default function AddToCartButton({
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-
     setAdded(true);
     onAdded?.();
-
     setTimeout(() => setAdded(false), 2000);
   };
 
   return (
     <button
       onClick={handleAddToCart}
-      className="flex-1 bg-white border-2 border-[#756C64]/40 hover:bg-[#756C64]/5 text-[#756C64] py-4 rounded-2xl font-bold text-lg transition-all"
+      title="Añadir al carrito"
+      className={`flex-1 flex items-center justify-center rounded-2xl transition-all duration-300 shadow-sm active:scale-90 ${
+        added 
+          ? "bg-green-500 text-white" 
+          : "bg-white border-2 border-[#E6B9B3]/40 text-[#756C64] hover:bg-[#F8F4ED]"
+      }`}
     >
-      {added ? "Añadido ✓" : "Añadir al carrito"}
+      {added ? <Check className="w-5 h-5" /> : <ShoppingBag className="w-5 h-5" />}
     </button>
   );
 }

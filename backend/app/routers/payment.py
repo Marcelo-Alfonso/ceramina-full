@@ -51,9 +51,11 @@ async def create_payment(data: CreatePaymentRequest,_: None =Depends(verify_api_
 
         product_ids = [item.productId for item in data.items]
         products = await get_products_by_ids(product_ids)
+        if not products:
+            raise HTTPException(404, "No se encontraron productos")
+        if len(products) != len(product_ids):
+            raise HTTPException(400, "Uno o más productos no están disponibles")
 
-        if not products or len(products) != len(product_ids):
-            raise HTTPException(404, "Uno o más productos no existen")
 
         product_map = {p["id"]: p for p in products}
 
@@ -61,15 +63,19 @@ async def create_payment(data: CreatePaymentRequest,_: None =Depends(verify_api_
         order_items_payload = []
 
         for item in data.items:
-            product = product_map[item.productId]
+            product = product_map.get(item.productId)
 
-            subtotal = product["price"] * item.quantity
+            if not product:
+                raise HTTPException(400, "Producto inválido en la orden")
+
+            subtotal = product["final_price"] * item.quantity
             total_amount += subtotal
 
             order_items_payload.append({
                 "product_id": product["id"],
                 "quantity": item.quantity,
-                "price": product["price"],
+                "price": product["final_price"],
+                "original_price": product["original_price"],
             })
 
         if total_amount <= 0:
@@ -79,6 +85,10 @@ async def create_payment(data: CreatePaymentRequest,_: None =Depends(verify_api_
             shipping_cost = calculate_shipping(data.shippingMethod)
         except ValueError:
             raise HTTPException(400, "Método de envío inválido")
+        FREE_SHIPPING_THRESHOLD = 20000
+
+        if total_amount >= FREE_SHIPPING_THRESHOLD:
+            shipping_cost = 0
 
         total_amount += shipping_cost
 

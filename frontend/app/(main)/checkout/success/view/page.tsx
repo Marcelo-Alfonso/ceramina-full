@@ -4,7 +4,12 @@ import { useEffect, useState, Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
-import { CheckCircle2, XCircle, Clock, AlertCircle, Loader2 } from "lucide-react"
+import { 
+  CheckCircle2, XCircle, Clock, AlertCircle, 
+  Loader2, MapPin, Phone, Package, ArrowLeft, 
+  ReceiptText, Store
+} from "lucide-react"
+import { formatCLP } from "@/lib/format"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -12,6 +17,7 @@ type OrderItem = {
   id: number
   quantity: number
   price: number
+  original_price: number
   products: {
     id: number
     name: string
@@ -38,22 +44,14 @@ function StatusContent() {
 
     const fetchData = async () => {
       try {
-        const statusRes = await fetch(`${API_URL}/order-status?token=${token}`, {
-          cache: "no-store"
-        })
-
+        const statusRes = await fetch(`${API_URL}/order-status?token=${token}`, { cache: "no-store" })
         if (!statusRes.ok) throw new Error()
-
         const statusData = await statusRes.json()
         setStatus(statusData.status)
 
-        const itemsRes = await fetch(`${API_URL}/order/by-token/items?token=${token}`, {
-          cache: "no-store"
-        })
-
+        const itemsRes = await fetch(`${API_URL}/order/by-token/items?token=${token}`, { cache: "no-store" })
         if (itemsRes.ok) {
           const data = await itemsRes.json()
-
           setItems(data.items || [])
           setShippingMethod(data.shipping_method)
           setShippingCost(data.shipping_cost || 0)
@@ -61,7 +59,6 @@ function StatusContent() {
           setPhone(data.phone)
           setAmount(data.amount || 0)
         }
-
       } catch {
         setStatus("error")
       }
@@ -71,40 +68,42 @@ function StatusContent() {
     localStorage.removeItem("checkout_idempotency")
   }, [token])
 
-  const subtotal = items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  )
+  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
 
   const configs = {
     loading: {
-      icon: <Loader2 className="w-20 h-20 text-slate-400 animate-spin mx-auto" />,
+      icon: <Loader2 className="w-12 h-12 text-[#756C64] animate-spin" />,
+      bgIcon: "bg-gray-100",
       title: "Verificando pago",
-      desc: "Estamos confirmando tu transacción con el banco.",
-      color: "text-slate-600"
+      desc: "Estamos confirmando tu transacción...",
+      color: "text-gray-600"
     },
     paid: {
-      icon: <CheckCircle2 className="w-20 h-20 text-green-500 mx-auto" />,
-      title: "¡Pago Recibido!",
-      desc: "Tu pedido ha sido procesado con éxito.",
+      icon: <CheckCircle2 className="w-12 h-12 text-white" />,
+      bgIcon: "bg-green-500",
+      title: "¡Pago Exitoso!",
+      desc: "Tu pedido ya está en camino a ser preparado.",
       color: "text-green-600"
     },
     rejected: {
-      icon: <XCircle className="w-20 h-20 text-red-500 mx-auto" />,
+      icon: <XCircle className="w-12 h-12 text-white" />,
+      bgIcon: "bg-red-500",
       title: "Pago Rechazado",
-      desc: "No pudimos procesar el pago.",
+      desc: "Hubo un problema con la transacción bancaria.",
       color: "text-red-600"
     },
     pending: {
-      icon: <Clock className="w-20 h-20 text-amber-500 mx-auto" />,
+      icon: <Clock className="w-12 h-12 text-white" />,
+      bgIcon: "bg-amber-500",
       title: "Pago Pendiente",
-      desc: "Tu pago está en revisión.",
+      desc: "Tu pago está siendo procesado por Flow.",
       color: "text-amber-600"
     },
     error: {
-      icon: <AlertCircle className="w-20 h-20 text-rose-500 mx-auto" />,
+      icon: <AlertCircle className="w-12 h-12 text-white" />,
+      bgIcon: "bg-rose-500",
       title: "Algo salió mal",
-      desc: "Hubo un problema al consultar el pedido.",
+      desc: "No pudimos encontrar los detalles del pedido.",
       color: "text-rose-600"
     }
   }
@@ -112,98 +111,120 @@ function StatusContent() {
   const current = configs[status]
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-26 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-10 text-center">
-
-        <div className="mb-6">{current.icon}</div>
-
-        <h1 className={`text-3xl font-bold mb-3 ${current.color}`}>
-          {current.title}
-        </h1>
-
-        <p className="text-gray-500 mb-6">{current.desc}</p>
-
-        {status === "paid" && items.length > 0 && (
-          <div className="text-left mb-6 border-t pt-4">
-
-            <div className="mb-4 text-sm text-gray-600 space-y-1">
-              {shippingMethod === "pickup" ? (
-                <>
-                  <p>🏪 Retiro en Agustín Edwards 1961</p>
-                  {phone && <p>📱 Contacto: {phone}</p>}
-                </>
-              ) : (
-                <>
-                  <p>🚚 Envío a:</p>
-                  {address && <p className="text-gray-800">{address}</p>}
-                  {phone && <p>📱 Contacto: {phone}</p>}
-                </>
-              )}
+    <div className="min-h-screen bg-[#FDFCFB] flex items-center justify-center p-4 py-20">
+      <div className="max-w-xl w-full">
+        <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-[#756C64]/5 border border-gray-100 overflow-hidden">
+          <div className="pt-12 pb-8 px-6 text-center">
+            <div className={`w-24 h-24 ${current.bgIcon} rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-current/20`}>
+              {current.icon}
             </div>
-
-            <h2 className="font-semibold mb-3 text-sm text-gray-600">
-              Resumen de compra
-            </h2>
-
-            <div className="space-y-3">
-              {items.map((item) => (
-                <div key={item.id} className="flex items-center gap-3">
-                  <div className="relative w-14 h-14 flex-shrink-0">
-                    <Image
-                      src={item.products.image}
-                      alt={item.products.name}
-                      fill
-                      className="object-cover rounded-lg border"
-                    />
-                  </div>
-
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-800">
-                      {item.products.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Cantidad: {item.quantity}
-                    </p>
-                  </div>
-
-                  <div className="text-sm font-semibold text-gray-700">
-                    ${(item.price * item.quantity).toLocaleString("es-CL")}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="border-t mt-4 pt-3 space-y-1 text-sm">
-
-              <div className="flex justify-between text-gray-600">
-                <span>Subtotal</span>
-                <span>${subtotal.toLocaleString("es-CL")}</span>
-              </div>
-
-              <div className="flex justify-between text-gray-600">
-                <span>Envío</span>
-                <span>
-                  {shippingCost === 0
-                    ? "Gratis"
-                    : `$${shippingCost.toLocaleString("es-CL")}`}
-                </span>
-              </div>
-
-              <div className="flex justify-between font-bold text-gray-800 pt-2">
-                <span>Total</span>
-                <span>${amount.toLocaleString("es-CL")}</span>
-              </div>
-
-            </div>
+            <h1 className={`text-3xl font-black mb-2 tracking-tight ${current.color}`}>
+              {current.title}
+            </h1>
+            <p className="text-gray-400 font-medium max-w-[280px] mx-auto leading-tight">
+              {current.desc}
+            </p>
           </div>
-        )}
 
-        <Link
-          href="/"
-          className="block w-full bg-[#756C64] hover:bg-[#5e5650] text-white py-4 rounded-2xl font-bold transition-colors"
-        >
-          {status === "paid" ? "Ir a mis pedidos" : "Volver al inicio"}
-        </Link>
+          {status === "paid" && items.length > 0 && (
+            <div className="px-8 pb-10 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="bg-[#F8F4ED] rounded-3xl p-5 flex gap-4 items-start border border-[#E6B9B3]/20">
+                <div className="bg-white p-3 rounded-2xl shadow-sm">
+                  {shippingMethod === "pickup" ? <Store className="w-5 h-5 text-[#756C64]" /> : <MapPin className="w-5 h-5 text-[#756C64]" />}
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-[#A7B39B] uppercase tracking-widest">
+                    {shippingMethod === "pickup" ? "Punto de Retiro" : "Dirección de Envío"}
+                  </p>
+                  <p className="text-sm font-bold text-[#756C64] leading-snug">
+                    {shippingMethod === "pickup" ? "Agustín Edwards 1961, Arica" : address}
+                  </p>
+                  {phone && (
+                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                      <Phone className="w-3 h-3" /> {phone}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-2 text-gray-400">
+                  <Package className="w-4 h-4" />
+                  <h2 className="text-[11px] font-black uppercase tracking-[0.2em]">Resumen del Pedido</h2>
+                </div>
+                
+                <div className="space-y-4 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                  {items.map((item) => (
+                    <div key={item.id} className="flex items-center gap-4 group">
+                      <div className="relative w-16 h-16 flex-shrink-0 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 group-hover:border-[#E6B9B3] transition-colors">
+                        <Image
+                          src={item.products.image}
+                          alt={item.products.name}
+                          fill
+                          className="object-contain p-2"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-[#756C64] truncate">
+                          {item.products.name}
+                        </p>
+                        <p className="text-xs font-medium text-gray-400">
+                          Cant. {item.quantity} · {item.original_price !== item.price ? (
+                            <>
+                              <span className="line-through opacity-60 mr-1">{formatCLP(item.original_price)}</span>
+                              <span>{formatCLP(item.price)}</span>
+                            </>
+                          ) : (
+                            formatCLP(item.price)
+                          )} c/u
+                        </p>
+                      </div>
+                      <p className="text-sm font-black text-[#756C64]">
+                        {formatCLP(item.price * item.quantity)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-dashed border-gray-200 space-y-3">
+                <div className="flex justify-between text-sm font-medium text-gray-500">
+                  <span>Subtotal</span>
+                  <span>{formatCLP(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm font-medium text-gray-500">
+                  <span>Envío</span>
+                  <span className={shippingCost === 0 ? "text-green-600" : ""}>
+                    {shippingCost === 0 ? "Gratis" : formatCLP(shippingCost)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-end pt-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Pagado</span>
+                    <span className="text-3xl font-black text-[#756C64] tracking-tighter">
+                      {formatCLP(amount)}
+                    </span>
+                  </div>
+                  <ReceiptText className="w-10 h-10 text-gray-100" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="p-8 pt-0">
+            <Link
+              href="/"
+              className="group flex items-center justify-center gap-2 w-full bg-[#756C64] hover:bg-[#5e5650] text-white py-5 rounded-[1.5rem] font-bold transition-all shadow-xl shadow-[#756C64]/10 active:scale-[0.98]"
+            >
+              {status !== "paid" && <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />}
+              {status === "paid" ? "Explorar más productos" : "Volver a la tienda"}
+            </Link>
+          </div>
+        </div>
+
+        <p className="mt-8 text-center text-gray-400 text-xs font-medium uppercase tracking-[0.2em]">
+          Gracias por confiar en nosotros
+        </p>
       </div>
     </div>
   )
@@ -211,7 +232,11 @@ function StatusContent() {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<div className="p-10 text-center text-gray-500">Cargando...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFCFB]">
+        <Loader2 className="w-10 h-10 animate-spin text-[#756C64]" />
+      </div>
+    }>
       <StatusContent />
     </Suspense>
   )
