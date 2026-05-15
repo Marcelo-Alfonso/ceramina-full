@@ -18,11 +18,12 @@ export default function Footer() {
       ) 
     },
     { 
-      name: "YouTube", 
-      href: "https://www.youtube.com/@Ceramina-fria", 
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17Z"/><path d="m10 15 5-3-5-3z"/></svg>
-      ) 
+      name: "TikTok", 
+      href: "https://www.tiktok.com/@ceraminafria", 
+      icon: (<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"fill="currentColor">
+          <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.204V2h-3.193v13.677c0 1.496-1.219 2.714-2.714 2.714s-2.714-1.218-2.714-2.714c0-1.495 1.219-2.714 2.714-2.714.282 0 .553.044.807.123V9.846a5.922 5.922 0 0 0-.807-.055A5.91 5.91 0 0 0 4 15.7a5.91 5.91 0 0 0 5.912 5.91 5.91 5.91 0 0 0 5.91-5.91V9.148a8.003 8.003 0 0 0 4.767 1.57V7.526a4.77 4.77 0 0 1-1-.84z"/>
+        </svg>
+      )
     }
   ];
 

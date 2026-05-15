@@ -8,53 +8,63 @@ export async function startPayment(_prevState: any, formData: FormData) {
   const supabase = await createClient();
 
   const email = formData.get("email")?.toString().trim();
-  const address = formData.get("address")?.toString().trim() || null;
+  const name = formData.get("name")?.toString().trim();
+  const rut = formData.get("rut")?.toString().trim();
   const phone = formData.get("phone")?.toString().trim();
-  const shippingMethod = formData.get("shippingMethod")?.toString();
+  const street = formData.get("street")?.toString().trim();
+  const number = formData.get("number")?.toString().trim();
+  const comuna = formData.get("comuna")?.toString().trim();
+  const region = formData.get("region")?.toString();
+  
   const productId = Number(formData.get("productId"));
   const rawQuantity = Number(formData.get("quantity"));
   const idempotencyKey = formData.get("idempotencyKey")?.toString();
-
   const acceptedTerms = formData.get("acceptedTerms") === "true";
 
-  const quantity =
-    Number.isFinite(rawQuantity) && rawQuantity > 0 && rawQuantity <= 10
-      ? rawQuantity
-      : 1;
+  if (!name || name.length < 3) {
+    return { error: "El nombre es demasiado corto" };
+  }
+
+  const rutRegex = /^[0-9]{1,2}(\.?[0-9]{3}){2}-?[0-9kK]{1}$/;
+  if (!rut || !rutRegex.test(rut)) {
+    return { error: "RUT inválido (ej: 12345678-9)" };
+  }
 
   if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
     return { error: "Email inválido" };
   }
 
-  if (!phone || !/^\+?56?9\d{8}$/.test(phone)) {
+  if (!phone || !/^(\+?56)?9\d{8}$/.test(phone.replace(/\s/g, ""))) {
     return { error: "Teléfono inválido (ej: +56912345678)" };
   }
 
-  if (!shippingMethod || !["pickup", "standard"].includes(shippingMethod)) {
-    return { error: "Método de envío inválido" };
+  if (!street || !number || !comuna) {
+    return { error: "Faltan datos en la dirección (Calle, Número o Comuna)" };
+  }
+
+  if (!region || !["arica", "santiago"].includes(region)) {
+    return { error: "Región de envío no válida" };
   }
 
   if (!acceptedTerms) {
-    return { error: "Debes aceptar los términos y condiciones" };
+    return { error: "Debes aceptar los términos y privacidad" };
   }
 
-  if (shippingMethod === "standard") {
-    if (!address || address.length < 5) {
-      return { error: "Dirección de envío inválida" };
-    }
-  }
-
-  if (!idempotencyKey) {
-    return { error: "Error interno: falta idempotency key" };
-  }
+  const quantity = Number.isFinite(rawQuantity) && rawQuantity > 0 && rawQuantity <= 10
+      ? rawQuantity
+      : 1;
 
   if (!productId || productId <= 0) {
     return { error: "Producto inválido" };
   }
 
+  if (!idempotencyKey) {
+    return { error: "Error de sesión: falta llave de idempotencia" };
+  }
+
   const { data: product, error: dbError } = await supabase
     .from("products")
-    .select("id")
+    .select("id, price")
     .eq("id", productId)
     .single();
 
@@ -62,9 +72,11 @@ export async function startPayment(_prevState: any, formData: FormData) {
     return { error: "El producto ya no está disponible" };
   }
 
+  const fullAddress = `${street} ${number}, ${comuna}. Región: ${region}`;
+
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     const res = await fetch(`${EXTERNAL_API_URL}/create-payment`, {
       method: "POST",
@@ -74,9 +86,11 @@ export async function startPayment(_prevState: any, formData: FormData) {
       },
       body: JSON.stringify({
         email,
-        address,
+        name,
+        rut,
         phone,
-        shippingMethod,
+        address: fullAddress,
+        region,
         acceptedTerms,
         items: [
           {
@@ -95,16 +109,13 @@ export async function startPayment(_prevState: any, formData: FormData) {
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
       console.error("Gateway Error:", errorData);
-
-      return {
-        error: "La pasarela de pago no responde. Intenta de nuevo.",
-      };
+      return { error: "La pasarela de pago tiene problemas. Intenta más tarde." };
     }
 
     const data = await res.json();
 
     if (!data.url) {
-      return { error: "Error al generar la sesión de pago" };
+      return { error: "No se pudo generar el enlace de pago" };
     }
 
     return { url: data.url };
@@ -113,11 +124,7 @@ export async function startPayment(_prevState: any, formData: FormData) {
     if (err.name === "AbortError") {
       return { error: "La conexión tardó demasiado. Revisa tu internet." };
     }
-
     console.error("Payment Action Exception:", err);
-
-    return {
-      error: "Ocurrió un error inesperado al procesar el pago",
-    };
+    return { error: "Error inesperado al procesar el pago" };
   }
 }

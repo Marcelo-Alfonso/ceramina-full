@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 import logging
 
+from app.core.logging import mask_secret
 from app.services.supabase_service import (
     get_order_by_token,
     update_order_by_token,
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 @router.get("/order-status")
 async def order_status(token: str = Query(...)):
     try:
+        masked_token = mask_secret(token)
         order = await get_order_by_token(token)
 
         if not order:
@@ -25,7 +27,7 @@ async def order_status(token: str = Query(...)):
         flow_status = await get_flow_status(token)
 
         if not flow_status or "status" not in flow_status:
-            logger.error("Invalid Flow response", extra={"token": token})
+            logger.error(f"Invalid Flow response for token: {masked_token}")
             return {"status": current_status}
 
         flow_state = flow_status["status"]
@@ -45,7 +47,7 @@ async def order_status(token: str = Query(...)):
             })
 
             logger.info("Order status synced", extra={
-                "token": token,
+                "token": masked_token,
                 "old": current_status,
                 "new": new_status
             })

@@ -11,62 +11,72 @@ class CartItem(BaseModel):
 
 class CreatePaymentRequest(BaseModel):
     email: EmailStr
+    
+    name: str = Field(
+        ..., 
+        min_length=3, 
+        max_length=100, 
+        description="Nombre completo del cliente"
+    )
+    
+    rut: str = Field(
+        ..., 
+        min_length=7, 
+        max_length=15, 
+        description="RUT del cliente (ej: 12345678-9)"
+    )
 
-    address: Optional[str] = Field(
-        None,
-        min_length=5,
-        max_length=255,
-        description="Dirección de envío"
+    address: str = Field(
+        ..., 
+        min_length=5, 
+        max_length=255, 
+        description="Dirección completa (Calle, número y comuna)"
     )
 
     phone: str = Field(
         ...,
-        min_length=8,
-        max_length=20,
-        description="Número de teléfono"
+        description="Número de teléfono móvil"
     )
 
-    shippingMethod: Literal["pickup", "standard"]
+    region: Literal["arica", "santiago"] = Field(
+        ..., 
+        description="Región de destino para el cálculo de envío"
+    )
 
     acceptedTerms: bool = Field(
-        ...,
+        ..., 
         description="Aceptación de términos y condiciones"
     )
 
     items: List[CartItem] = Field(
-        ...,
-        min_length=1,
+        ..., 
+        min_length=1, 
         description="Lista de productos"
     )
 
     idempotencyKey: str = Field(
-        ...,
-        min_length=10,
-        max_length=100,
-        description="UUID para evitar duplicados"
+        ..., 
+        description="UUID para evitar pagos duplicados"
     )
 
 
-    @field_validator("address")
+    @field_validator("rut")
     @classmethod
-    def clean_address(cls, value):
-        if value is None:
-            return value
-
-        value = value.strip()
-        return value if value else None
+    def validate_rut(cls, value: str):
+        value = value.strip().replace(".", "")
+        pattern = r"^[0-9]{7,8}-?[0-9kK]{1}$"
+        if not re.match(pattern, value):
+            raise ValueError("Formato de RUT inválido (ej: 12345678-9)")
+        return value
 
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, value: str):
-        value = value.strip()
-
+        clean_phone = value.replace(" ", "").strip()
         pattern = r"^\+?56?9\d{8}$"
-
-        if not re.match(pattern, value):
-            raise ValueError("Número de teléfono inválido (ej: +56912345678)")
-
-        return value
+        if not re.match(pattern, clean_phone):
+            raise ValueError("Teléfono inválido. Use formato +56912345678")
+        return clean_phone
 
     @field_validator("idempotencyKey")
     @classmethod
@@ -74,16 +84,8 @@ class CreatePaymentRequest(BaseModel):
         try:
             uuid.UUID(value)
         except ValueError:
-            raise ValueError("idempotencyKey inválido")
-
+            raise ValueError("idempotencyKey debe ser un UUID válido")
         return value
-
-    @field_validator("items")
-    @classmethod
-    def validate_items(cls, items):
-        if not items:
-            raise ValueError("Debe haber al menos un producto")
-        return items
 
     @field_validator("acceptedTerms")
     @classmethod
@@ -92,20 +94,10 @@ class CreatePaymentRequest(BaseModel):
             raise ValueError("Debes aceptar los términos y condiciones")
         return value
 
-    @field_validator("address")
+    @field_validator("address", "name")
     @classmethod
-    def validate_address_logic(cls, value, info):
-        shipping_method = info.data.get("shippingMethod")
-
-        if shipping_method == "standard":
-            if not value:
-                raise ValueError("La dirección es obligatoria para envío")
-
-
-        if shipping_method == "pickup":
-            return None 
-
-        return value
+    def clean_text(cls, value: str):
+        return value.strip()
 
 
 class CreatePaymentResponse(BaseModel):

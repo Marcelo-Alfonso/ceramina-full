@@ -1,25 +1,23 @@
 import Image from "next/image";
 import { formatCLP } from "@/lib/format";
 import { CartItem } from "@/types/cart";
-import { ShoppingBag, Truck, ReceiptText, ChevronRight } from "lucide-react";
+import { ShoppingBag, Truck, ReceiptText } from "lucide-react";
 
 export function OrderSummary({
   cart,
   shippingCost,
+  region,
 }: {
   cart: CartItem[];
   shippingCost: number;
+  region: "arica" | "santiago";
 }) {
-  const FREE_SHIPPING_THRESHOLD = 20000;
-
   const subtotal = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
-  const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
-  const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
-  const total = subtotal + (hasFreeShipping ? 0 : shippingCost);
+  const total = subtotal + shippingCost;
 
   return (
     <div className="bg-white rounded-3xl border border-[#E6B9B3]/50 sticky top-28 shadow-xl shadow-[#756C64]/5 overflow-hidden">
@@ -32,40 +30,15 @@ export function OrderSummary({
       </div>
 
       <div className="p-6">
-        <div className="mb-6">
-          <div className="flex justify-between items-end mb-2">
-            <p className="text-[11px] uppercase tracking-wider font-bold text-[#A7B39B]">
-              {hasFreeShipping ? "¡Envío Gratis Alcanzado!" : "Progreso de Envío"}
-            </p>
-            {!hasFreeShipping && (
-              <span className="text-[11px] font-medium text-gray-400">
-                Faltan {formatCLP(remainingForFreeShipping)}
-              </span>
-            )}
-          </div>
-          <div className="w-full bg-[#F8F4ED] rounded-full h-1.5 overflow-hidden">
-            <div
-              className="bg-[#A7B39B] h-full rounded-full transition-all duration-700 ease-out"
-              style={{
-                width: `${Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100)}%`,
-              }}
-            />
-          </div>
-          
-          <div className={`mt-3 p-3 rounded-2xl flex items-center gap-3 transition-colors ${
-            hasFreeShipping ? "bg-green-50 text-green-700" : "bg-[#F8F4ED] text-[#756C64]"
-          }`}>
-            <div className={`p-1.5 rounded-lg ${hasFreeShipping ? "bg-white" : "bg-[#E6B9B3]/20"}`}>
-              <Truck className="w-4 h-4" />
-            </div>
-            <p className="text-xs leading-tight">
-              {hasFreeShipping ? (
-                <span>¡Felicidades! Tu envío es <strong>totalmente gratis</strong></span>
-              ) : (
-                <span>Agrega <strong>{formatCLP(remainingForFreeShipping)}</strong> para envío gratis</span>
-              )}
-            </p>
-          </div>
+        <div className={`mb-6 p-3 rounded-2xl flex items-center gap-3 ${
+          region === "arica" ? "bg-green-50 text-green-700" : "bg-[#F8F4ED] text-[#756C64]"
+        }`}>
+          <Truck className="w-4 h-4" />
+          <p className="text-xs font-medium">
+            {region === "arica" 
+              ? "Envío Gratis a Arica Urbano" 
+              : "Despacho a Santiago: " + formatCLP(6000)}
+          </p>
         </div>
 
         <div className="max-h-[35vh] overflow-y-auto pr-2 -mr-2 space-y-4 mb-6 custom-scrollbar">
@@ -96,14 +69,14 @@ export function OrderSummary({
 
         <div className="bg-[#F8F4ED]/50 rounded-2xl p-4 space-y-3">
           <div className="flex justify-between text-sm text-gray-500">
-            <span className="flex items-center gap-1">Subtotal</span>
+            <span>Subtotal</span>
             <span className="font-medium">{formatCLP(subtotal)}</span>
           </div>
 
           <div className="flex justify-between text-sm text-gray-500">
-            <span>Envío estimado</span>
-            <span className={hasFreeShipping ? "text-green-600 font-bold" : "font-medium"}>
-              {hasFreeShipping ? "Gratis" : formatCLP(shippingCost)}
+            <span>Envío ({region === "arica" ? "Arica" : "Santiago"})</span>
+            <span className={region === "arica" ? "text-green-600 font-bold" : "font-medium"}>
+              {region === "arica" ? "Gratis" : formatCLP(6000)}
             </span>
           </div>
 

@@ -5,68 +5,66 @@ import { CartItem } from "@/types/cart";
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export async function startCartPayment({
+  name,
+  rut,
   email,
   phone,
   address,
-  shippingMethod,
-  cart,
+  region,
+  items,
   idempotencyKey,
   acceptedTerms,
 }: {
+  name: string;
+  rut: string;
   email: string;
   phone: string;
-  address: string | null;
-  shippingMethod: "pickup" | "standard";
-  cart: CartItem[];
+  address: string;
+  region: "arica" | "santiago";
+  items: CartItem[];
   idempotencyKey: string;
   acceptedTerms: boolean;
 }) {
+  if (!name || name.trim().length < 3) {
+    return { error: "El nombre es demasiado corto" };
+  }
+
+  if (!rut || !/^[0-9]{7,8}-?[0-9kK]{1}$/.test(rut.replace(/\./g, ""))) {
+    return { error: "RUT inválido (ej: 12345678-9)" };
+  }
+
   if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
     return { error: "Email inválido" };
   }
 
-  if (!phone || !/^\+?56?9\d{8}$/.test(phone)) {
+  if (!phone || !/^\+?56?9\d{8}$/.test(phone.replace(/\s/g, ""))) {
     return { error: "Teléfono inválido (ej: +56912345678)" };
   }
 
-  if (!["pickup", "standard"].includes(shippingMethod)) {
-    return { error: "Método de envío inválido" };
+  if (!address || address.trim().length < 5) {
+    return { error: "La dirección es obligatoria y debe ser válida" };
+  }
+
+  if (!["arica", "santiago"].includes(region)) {
+    return { error: "Región de envío no válida" };
   }
 
   if (!acceptedTerms) {
     return { error: "Debes aceptar los términos y condiciones" };
   }
-  let finalAddress: string | null = null;
 
-  if (shippingMethod === "standard") {
-    if (!address || address.trim().length < 5) {
-      return { error: "Dirección inválida" };
-    }
-
-    finalAddress = address.trim();
+  if (!items || items.length === 0) {
+    return { error: "El carrito está vacío" };
   }
 
-  if (!cart || cart.length === 0) {
-    return { error: "Carrito vacío" };
-  }
-
-  for (const item of cart) {
-    if (!item.id || item.id <= 0) {
-      return { error: "Producto inválido en carrito" };
-    }
-
-    if (!item.quantity || item.quantity <= 0 || item.quantity > 10) {
-      return { error: "Cantidad inválida en carrito" };
-    }
-  }
-
-  if (!idempotencyKey) {
-    return { error: "Error interno (idempotency)" };
-  }
+  const formattedItems = items.map((item) => ({
+    productId: Number(item.id),
+    quantity: Math.min(Math.max(item.quantity, 1), 10),
+  }));
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 10000);
 
     const res = await fetch(`${API_URL}/create-payment`, {
       method: "POST",
@@ -75,16 +73,15 @@ export async function startCartPayment({
         "X-API-KEY": process.env.INTERNAL_API_KEY || "",
       },
       body: JSON.stringify({
-        email,
-        phone,
-        address: finalAddress,
-        shippingMethod,
-        acceptedTerms,
-        items: cart.map((item) => ({
-          productId: item.id,
-          quantity: item.quantity,
-        })),
+        name: name.trim(),
+        rut: rut.trim(),
+        email: email.trim(),
+        phone: phone.trim().replace(/\s/g, ""),
+        address: address.trim(),
+        region,
+        items: formattedItems,
         idempotencyKey,
+        acceptedTerms,
       }),
       signal: controller.signal,
       cache: "no-store",
@@ -93,28 +90,28 @@ export async function startCartPayment({
     clearTimeout(timeout);
 
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      console.error("Cart payment error:", err);
-
-      return {
-        error: "La pasarela de pago no respondió correctamente",
+      const errData = await res.json().catch(() => ({}));
+      console.error("Backend Error:", errData);
+      
+      return { 
+        error: errData.detail || "Error al procesar el pago. Intenta nuevamente." 
       };
     }
 
     const data = await res.json();
 
     if (!data?.url) {
-      return { error: "No se pudo generar el pago" };
+      return { error: "La pasarela de pago no devolvió una URL válida" };
     }
 
     return { url: data.url };
 
   } catch (err: any) {
     if (err.name === "AbortError") {
-      return { error: "La conexión tardó demasiado. Intenta nuevamente." };
+      return { error: "La conexión tardó demasiado. Revisa tu internet." };
     }
 
-    console.error("Cart payment exception:", err);
-    return { error: "Error inesperado" };
+    console.error("Fetch Exception:", err);
+    return { error: "Error de conexión con el servidor" };
   }
 }

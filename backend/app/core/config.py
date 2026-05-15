@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     flow_api_key: str = Field(..., min_length=1, strip_whitespace=True)
     flow_secret_key: str = Field(..., min_length=1, strip_whitespace=True)
+    flow_webhook_secret: str = Field(..., min_length=1, strip_whitespace=True)
 
     flow_base_url: AnyHttpUrl
     flow_return_url: AnyHttpUrl

@@ -172,7 +172,7 @@ export default async function ProductPage({ params }: Props) {
                 <div className="flex items-start gap-3 text-sm text-[#756C64]">
                   <Truck className="w-5 h-5 mt-0.5 text-[#FFA195]" />
                   <p>
-                    Envíos disponibles <strong>solo dentro del sector urbano de Arica</strong>.   
+                    Envíos disponibles <strong>solo dentro del sector urbano de Arica (gratis) y Santiago (7000)</strong>.   
                     Para envíos fuera de esta zona, por favor consultar vía WhatsApp.
                   </p>
                 </div>
@@ -181,7 +181,7 @@ export default async function ProductPage({ params }: Props) {
                   <MapPin className="w-5 h-5 mt-0.5 text-[#FFA195]" />
                   <p>
                     Retiro disponible en:{" "}
-                    <strong>Agustín Edwards 1961</strong>
+                    <strong>Agustín Edwards 1961, Arica</strong>. Consultar por Whatsapp.
                   </p>
                 </div>
               </div>
