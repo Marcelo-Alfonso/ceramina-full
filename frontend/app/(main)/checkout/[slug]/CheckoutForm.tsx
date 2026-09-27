@@ -128,7 +128,7 @@ export default function CheckoutForm({ product }: { product: any }) {
             }`}
           >
             <span className={`font-bold ${region === "arica" ? "text-[#756C64]" : "text-gray-500"}`}>Arica</span>
-            <span className="text-xs text-green-600 font-medium font-mono tracking-tighter">GRATIS</span>
+            <span className="text-xs text-gray-500 font-medium font-mono tracking-tighter">+$2.500</span>
           </button>
 
           <button
