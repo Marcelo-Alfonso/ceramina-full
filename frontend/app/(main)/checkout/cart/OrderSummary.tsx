@@ -36,7 +36,7 @@ export function OrderSummary({
           <Truck className="w-4 h-4" />
           <p className="text-xs font-medium">
             {region === "arica" 
-              ? "Envío Gratis a Arica Urbano" 
+              ? "Despacho a Arica: " + formatCLP(2500) 
               : "Despacho a Santiago: " + formatCLP(6000)}
           </p>
         </div>

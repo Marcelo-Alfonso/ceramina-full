@@ -70,7 +70,7 @@ async def create_payment(data: CreatePaymentRequest, _: None = Depends(verify_ap
 
         region = data.region.lower()
         if region == "arica":
-            shipping_cost = 0
+            shipping_cost = 2500
         elif region == "santiago":
             shipping_cost = 6000
         else:

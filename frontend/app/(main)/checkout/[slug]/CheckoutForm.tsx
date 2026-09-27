@@ -20,7 +20,7 @@ export default function CheckoutForm({ product }: { product: any }) {
 
   const [state, formAction, isPending] = useActionState(startPayment as any, initialState);
 
-  const SHIPPING_ARICA = 0;
+  const SHIPPING_ARICA = 2500;
   const SHIPPING_SANTIAGO = 6000;
 
   const subtotal = product.price * quantity;
@@ -151,7 +151,7 @@ export default function CheckoutForm({ product }: { product: any }) {
         </div>
         <div className="flex justify-between opacity-80 text-sm">
           <span>Envío</span>
-          <span>{shippingCost === 0 ? "Gratis" : formatCLP(shippingCost)}</span>
+          <span>{formatCLP(shippingCost)}</span>
         </div>
         <div className="border-t border-white/20 pt-3 flex justify-between font-bold text-xl">
           <span>Total</span>
