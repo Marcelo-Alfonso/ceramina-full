@@ -3,12 +3,42 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Menu, X, User, ShoppingBag } from 'lucide-react';
 import LogoutButton from './LogoutButton';
+import { createClient } from '@/lib/supabase/browser';
 
-export default function HeaderClient({ user }: { user: any }) {
+export default function HeaderClient({ user: initialUser }: { user: any }) {
+  const [user, setUser] = useState(initialUser);
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const router = useRouter();
+
+  // Sincronizar el estado del usuario si cambia desde el servidor
+  useEffect(() => {
+    setUser(initialUser);
+  }, [initialUser]);
+
+  // Escuchar eventos de autenticación en tiempo real en el cliente
+  useEffect(() => {
+    const supabase = createClient();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        setUser(session?.user ?? null);
+        router.refresh(); // Refresca los Server Components para actualizar las cookies globalmente
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        router.refresh();
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router]);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -74,6 +104,7 @@ export default function HeaderClient({ user }: { user: any }) {
             Ceramina
           </span>
         </Link>
+
         <nav className="hidden md:flex items-center space-x-8">
           {navItems.map((item) => (
             <Link
