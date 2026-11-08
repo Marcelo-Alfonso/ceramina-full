@@ -43,7 +43,7 @@ export default function AddToCartButton({
       className={`flex-1 flex items-center justify-center rounded-2xl transition-all duration-300 shadow-sm active:scale-90 ${
         added 
           ? "bg-green-500 text-white" 
-          : "bg-white border-2 border-[#E6B9B3]/40 text-[#756C64] hover:bg-[#F8F4ED]"
+          : "bg-white border-1 border-[#c54c74]/20 text-[#000000] hover:bg-[#F8F4ED]"
       }`}
     >
       {added ? <Check className="w-5 h-5" /> : <ShoppingBag className="w-5 h-5" />}

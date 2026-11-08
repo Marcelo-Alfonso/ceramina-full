@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tailwindcss-animated";
 
+@theme {
+  --font-roboto: var(--font-roboto), sans-serif;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

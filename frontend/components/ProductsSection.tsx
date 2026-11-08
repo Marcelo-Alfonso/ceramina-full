@@ -46,7 +46,7 @@ export default async function ProductsSection() {
   return (
     <section
       id="productos-seccion"
-      className="pt-26 py-14 px-6 md:px-12 bg-gradient-to-b from-[#FDFBF7] to-[#F8F4ED]"
+      className="pt-26 py-14 px-6 md:px-12 bg-[#FFFFFF]"
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20 space-y-4">

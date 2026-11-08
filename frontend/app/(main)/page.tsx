@@ -7,18 +7,25 @@
  * #FFA195 (Rojo pastel) -> Resaltar texto
  */
 
-import HeroSection from '@/components/HeroSection';
+import HeroCarousel from '@/components/Carrusel';
 import ProductsSectionHero from '@/components/ProductsSectionHero';
+import PersonalizadosHero from '@/components/PersonalizadosHero';
 import FeaturesSection from '@/components/FeaturesSection';
 import Prewarm from '@/components/Prewarm';
 
+const heroImages = [
+    '/productos_carrusel.webp', // Imagen para los productos
+    '/personalizado_carrusel.webp', // Imagen para la sección de pedidos personalizados
+    '/nosotros.jpeg', // Imagen para la sección de consejos y guía
+  ];
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#F8F4ED] font-sans">
       <main>
         <Prewarm />
-        <HeroSection />
+        <HeroCarousel images={heroImages}/>
         <ProductsSectionHero />
+        <PersonalizadosHero />
         <FeaturesSection />
       </main>
     </div>
