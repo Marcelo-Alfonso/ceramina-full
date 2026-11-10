@@ -28,25 +28,30 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#756C64] text-[#F8F4ED] pt-14 pb-12 border-t border-[#E6B9B3]/10">
+    // Sección completa footer
+    <footer className="bg-[#425951] pt-14 pb-12 border-t border-[#E6B9B3]/10">
       <div className="max-w-7xl mx-auto px-8">
+        {/* Contenido del footer */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left">
           <div className="space-y-6">
-            <h3 className="text-2xl font-serif tracking-[0.2em] uppercase">Ceramina</h3>
-            <p className="text-sm text-[#F8F4ED]/60 leading-relaxed max-w-xs mx-auto md:mx-0 font-light">
+            <h3 className="text-2xl lg:text-3xl text-[#e689a8] tracking-[0.1em]">Ceramina</h3>
+            <p className="text-base text-[#FFFFFF] font-roboto leading-relaxed max-w-xs mx-auto md:mx-0">
               Modelando historias únicas en porcelana fría desde Arica. Cada pieza es un reflejo de delicadeza y amor por lo artesanal.
             </p>
           </div>
+          {/* Enlaces del mapa del sitio */}
           <div className="space-y-6">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#FFA195]">Mapa del Sitio</h4>
+            <h4 className="text-[14px] font-bold uppercase tracking-[0.2em] text-[#e689a8]">Mapa del Sitio</h4>
             <nav className="flex flex-col space-y-3 text-sm text-[#F8F4ED]/80 font-medium">
-              <Link href="/productos" className="hover:text-[#FFA195] transition-colors inline-block">Colección Completa</Link>
-              <Link href="/nosotros" className="hover:text-[#FFA195] transition-colors inline-block">Nuestra Esencia</Link>
-              <Link href="/contacto" className="hover:text-[#FFA195] transition-colors inline-block">Habla con nosotros</Link>
+              <Link href="/productos" className="hover:text-[#e7c8db] text-[#ffffff] transition-colors inline-block">Colección Completa</Link>
+              <Link href="/personalizados" className="hover:text-[#e7c8db] text-[#ffffff] transition-colors inline-block">Pedidos Personalizados</Link>
+              <Link href="/cuidados" className="hover:text-[#e7c8db] text-[#ffffff] transition-colors inline-block">Guía de Cuidados</Link>
+              <Link href="/nosotros" className="hover:text-[#e7c8db] text-[#ffffff] transition-colors inline-block">Nuestra Esencia</Link>
+              <Link href="/contacto" className="hover:text-[#e7c8db] text-[#ffffff] transition-colors inline-block">Habla con nosotros</Link>
             </nav>
           </div>
           <div className="space-y-6 text-center md:text-right">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#FFA195]">Comunidad Ceramina</h4>
+            <h4 className="text-[14px] font-bold tracking-[0.1em] text-[#e689a8]">Comunidad Ceramina</h4>
             <div className="flex justify-center md:justify-end gap-5">
               {socialLinks.map((social) => (
                 <a
@@ -54,7 +59,7 @@ export default function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3 bg-[#F8F4ED]/5 rounded-2xl hover:bg-[#FFA195] hover:text-white transition-all duration-500 transform hover:-translate-y-1.5 border border-[#F8F4ED]/10"
+                  className="p-3 bg-[#e0c5d3] rounded-2xl hover:bg-[#ba7497] text-[#370630] hover:text-white transition-all duration-500 transform hover:-translate-y-1.5 border border-[#F8F4ED]/10"
                 >
                   {social.icon}
                 </a>
@@ -62,13 +67,14 @@ export default function Footer() {
             </div>
           </div>
         </div>
+        {/* Línea de copyright y enlaces legales */}
         <div className="pt-10 border-t border-[#F8F4ED]/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-[9px] uppercase tracking-[0.25em] text-[#A7B39B] font-medium text-center md:text-left">
+          <p className="text-[9px] uppercase tracking-[0.25em] text-[#ffffff] font-medium text-center md:text-left">
             &copy; {currentYear} Ceramina &bull; Inspiración Artesanal en cada detalle
           </p>
-          <div className="flex gap-8 text-[9px] uppercase tracking-[0.25em] text-[#A7B39B] font-medium">
-            <Link href="/privacidad" className="hover:text-[#F8F4ED] transition-colors">Privacidad</Link>
-            <Link href="/terminos" className="hover:text-[#F8F4ED] transition-colors">Términos</Link>
+          <div className="flex gap-8 text-[9px] uppercase tracking-[0.25em] text-[#ffffff] font-medium">
+            <Link href="/privacidad" className="hover:text-[#e689a8] transition-colors">Privacidad</Link>
+            <Link href="/terminos" className="hover:text-[#e689a8] transition-colors">Términos</Link>
           </div>
         </div>
       </div>

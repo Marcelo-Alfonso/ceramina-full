@@ -13,7 +13,7 @@ import {
 const CUIDADOS = [
   {
     title: "Evitar agua y humedad",
-    desc: "La porcelana fría no es resistente al agua. La exposición prolongada puede deteriorar o deformar la pieza.",
+    desc: "Tu figurita a pesar de estar protegida con el barniz no es impermeable. Evita sumergirlas o exponerlas a ambientes húmedos por mucho tiempo.",
     icon: <Droplets className="w-5 h-5" />,
   },
   {
@@ -23,12 +23,12 @@ const CUIDADOS = [
   },
   {
     title: "Evitar calor y sol directo",
-    desc: "El sol intenso puede resecar, decolorar o deformar la pieza con el tiempo. Mantenla en la sombra.",
+    desc: "El sol intenso puede resecar, decolorar o deformar la pieza si se expone por mucho tiempo. Guárdala en un lugar fresco y seco.",
     icon: <Sun className="w-5 h-5" />,
   },
   {
     title: "Evitar golpes o caídas",
-    desc: "Aunque son firmes, son piezas delicadas. Manipúlalas con amor y evita impactos fuertes.",
+    desc: "Aunque son firmes, pueden llegar a romperse con impactos fuertes. Manipúlalas con cuidado.",
     icon: <Hammer className="w-5 h-5" />,
   },
   {
@@ -43,7 +43,7 @@ const CUIDADOS = [
   },
   {
     title: "Evitar químicos",
-    desc: "Perfumes, alcohol y cremas pueden dañar irreparablemente el acabado y los colores.",
+    desc: "Perfumes, alcohol y cremas pueden dañar irreparablemente el acabado y los colores. No los apliques directamente sobre la pieza.",
     icon: <FlaskConical className="w-5 h-5" />,
   },
   {
@@ -55,18 +55,18 @@ const CUIDADOS = [
 
 export default function CuidadosPage() {
   return (
-    <div className="min-h-screen bg-[#FCFAFA] text-[#756C64] selection:bg-[#E6B9B3]/30">
+    <div className="min-h-screen bg-[#f6f3f4]">
       <div className="max-w-5xl mx-auto pt-28 px-6 py-16">
         
         {/* Header con diseño más aireado */}
         <header className="text-center space-y-6 mb-20">
-          <div className="inline-block px-3 py-1 border border-[#E6B9B3] rounded-full text-[10px] uppercase tracking-widest mb-2">
+          <div className="inline-block px-3 py-1 border bg-[#d473ad]/5 text-[#000000] border-[#a33a79]/50 rounded-full text-[10px] uppercase tracking-widest mb-2">
             Guía de mantenimiento
           </div>
-          <h1 className="text-4xl md:text-5xl font-serif text-[#5A524C]">
+          <h1 className="text-4xl md:text-5xl font-serif text-[#370630]">
             Cuidados de las piezas
           </h1>
-          <p className="max-w-xl mx-auto text-[#756C64]/70 italic font-light leading-relaxed">
+          <p className="max-w-xl mx-auto text-[#000000]/70 font-roboto font-light leading-relaxed">
             Cada pieza es modelada a mano con dedicación. 
             Sigue estos consejos para que tu tesoro artesanal perdure en el tiempo.
           </p>
@@ -81,15 +81,15 @@ export default function CuidadosPage() {
             >
               <div className="flex items-start gap-5">
                 {/* Icon Container */}
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[#FDF8F7] border border-[#E6B9B3]/30 flex items-center justify-center text-[#E6B9B3] group-hover:bg-[#E6B9B3] group-hover:text-white transition-colors duration-300">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[#d473ad]/5 border border-[#a33a79]/30 flex items-center justify-center text-[#a33a79] group-hover:bg-[#c54c74]/70 group-hover:text-white transition-colors duration-300">
                   {item.icon}
                 </div>
                 
                 <div className="space-y-2">
-                  <h2 className="font-serif text-xl text-[#5A524C]">
+                  <h2 className="font-serif text-2xl text-[#370630]">
                     {item.title}
                   </h2>
-                  <p className="text-sm leading-relaxed text-[#756C64]/80">
+                  <p className="text-[14px] font-roboto text-[#000000]/70">
                     {item.desc}
                   </p>
                 </div>
@@ -101,10 +101,10 @@ export default function CuidadosPage() {
         {/* Footer / Nota final */}
         <footer className="mt-20 text-center">
           <div className="inline-flex items-center gap-3 px-6 py-4 rounded-full bg-white border border-[#E6B9B3]/20 shadow-sm">
-            <span className="text-sm italic">
+            <span className="font-roboto text-[#000000]/80 text-base">
               Siguiendo estos pasos, tus piezas lucirán como el primer día 
             </span>
-            <span className="text-[#E6B9B3] animate-pulse">💛</span>
+            <span className="text-[#E6B9B3] animate-pulse">💕</span>
           </div>
         </footer>
       </div>

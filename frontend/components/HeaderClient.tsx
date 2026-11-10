@@ -58,8 +58,9 @@ export default function HeaderClient({ user: initialUser }: { user: any }) {
   const navItems = [
     { href: '/', label: 'Inicio' },    
     { href: '/productos', label: 'Colección' },
+    { href: '/personalizados', label: 'Cotiza' },
+    { href: '/galeria', label: 'Galería' },
     { href: '/cuidados', label: 'Cuidados' },
-    { href: '/nosotros', label: 'Nosotros' },
     { href: '/contacto', label: 'Contacto' },
   ];
 

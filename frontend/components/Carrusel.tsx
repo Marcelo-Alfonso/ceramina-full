@@ -43,7 +43,7 @@ export default function HeroCarousel({ images }: { images?: string[] }) {
       title: 'Haz realidad tu idea personalizada',
       description: 'Creamos figuras y accesorios a tu medida. Revisa nuestra galería e inspírate para tu próximo pedido.',
       primaryBtnText: 'Pide el Tuyo',
-      primaryBtnHref: '/contacto',
+      primaryBtnHref: '/personalizados',
       secondaryBtnText: 'Galería',
       secondaryBtnHref: '/galeria',
       icon: <Palette className="w-6 h-6 text-[#e7c3cf]" />,
@@ -56,8 +56,8 @@ export default function HeroCarousel({ images }: { images?: string[] }) {
       description: 'Aprende las mejores técnicas para trabajar el material y los cuidados necesarios para preservar tus piezas.',
       primaryBtnText: 'Consejos',
       primaryBtnHref: '/cuidados',
-      secondaryBtnText: 'Guía',
-      secondaryBtnHref: '/cuidados#guia',
+      secondaryBtnText: 'Cuidados',
+      secondaryBtnHref: '/cuidados',
       icon: <BookOpen className="w-6 h-6 text-[#e7c3cf]" />,
     },
   ];
@@ -188,7 +188,7 @@ export default function HeroCarousel({ images }: { images?: string[] }) {
             aria-label={`Ir a la diapositiva ${index + 1}`}
             className={`h-2.5 rounded-full transition-all duration-300 ${
               index === currentSlide
-                ? 'w-8 bg-[#E6B9B3]'
+                ? 'w-8 bg-[#c54c74]/50'
                 : 'w-2.5 bg-white/50 hover:bg-white/80'
             }`}
           />
