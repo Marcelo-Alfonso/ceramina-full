@@ -57,7 +57,7 @@ export default function LoadingScreen({
               </div>
               <div className="relative h-1.5 w-full bg-[#E2E1D5] rounded-full overflow-hidden">
                 {progress === null ? (
-                  <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-[#A7B39B] via-[#FFA195] to-[#A7B39B] animate-indeterminate rounded-full" />
+                  <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-[#627c73] via-[#FFA195] to-[#627c73] animate-indeterminate rounded-full" />
                 ) : (
                   <div
                     className="h-full bg-[#A7B39B] transition-all duration-500 ease-out rounded-full shadow-[0_0_8px_rgba(167,179,155,0.5)]"

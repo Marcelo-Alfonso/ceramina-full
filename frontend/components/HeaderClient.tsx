@@ -60,7 +60,7 @@ export default function HeaderClient({ user: initialUser }: { user: any }) {
     { href: '/productos', label: 'Colección' },
     { href: '/personalizados', label: 'Cotiza' },
     { href: '/galeria', label: 'Galería' },
-    { href: '/cuidados', label: 'Cuidados' },
+    { href: '/consejos', label: 'Consejos' },
     { href: '/contacto', label: 'Contacto' },
   ];
 

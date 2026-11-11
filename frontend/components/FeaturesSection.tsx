@@ -20,14 +20,15 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section className="bg-gradient-to-b from-[#FDFBF7] to-[#F8F4ED] py-14 px-6">
+    <section className="bg-[#ffffff] py-14 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16 space-y-4">
-          <h3 className="text-4xl md:text-5xl font-serif text-[#756C64]">
+          <h3 className="text-4xl md:text-5xl font-serif text-[#370630]">
             Nuestra Esencia
           </h3>
-          <div className="h-1 w-12 bg-[#FFA195] mx-auto rounded-full" />
-          <p className="text-[#A7B39B] max-w-lg mx-auto font-serif font-semibold">
+          {/* separador */}
+          <div className="w-50 h-[1px] bg-[#370630] mx-auto mt-6" />
+          <p className="text-[#c54c74] max-w-lg mx-auto font-serif font-semibold">
             Transformamos la porcelana fría en recuerdos eternos.
           </p>
         </div>
@@ -38,15 +39,15 @@ export default function FeaturesSection() {
               key={index}
               className="group p-10 bg-white rounded-[2.5rem] border border-[#E6B9B3]/20 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 ease-out text-center"
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-[#F8F4ED] text-[#FFA195] group-hover:bg-[#FFA195] group-hover:text-white transition-colors duration-300">
+              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-[#ffffff] text-[#a33a79] group-hover:bg-[#a33a79] group-hover:text-white transition-colors duration-300">
                 {feature.icon}
               </div>
               
-              <h4 className="text-xl font-serif text-[#756C64] mb-3 group-hover:text-[#FFA195] transition-colors">
+              <h4 className="text-xl font-serif text-[#c54c74] mb-3 group-hover:text-[#80193b] transition-colors">
                 {feature.title}
               </h4>
               
-              <p className="text-[#756C64]/70 text-sm leading-relaxed">
+              <p className="text-[#000000] text-sm leading-relaxed">
                 {feature.description}
               </p>
             </div>

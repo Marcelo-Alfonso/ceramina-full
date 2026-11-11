@@ -10,6 +10,7 @@
 import HeroCarousel from '@/components/Carrusel';
 import ProductsSectionHero from '@/components/ProductsSectionHero';
 import PersonalizadosHero from '@/components/PersonalizadosHero';
+import SeccionConsejosYCuidadosCTA from '@/components/ConsejosHero';
 import FeaturesSection from '@/components/FeaturesSection';
 import Prewarm from '@/components/Prewarm';
 
@@ -20,12 +21,13 @@ const heroImages = [
   ];
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#F8F4ED] font-sans">
+    <div className="min-h-screen bg-[#f6f3f4] font-sans">
       <main>
         <Prewarm />
         <HeroCarousel images={heroImages}/>
         <ProductsSectionHero />
         <PersonalizadosHero />
+        <SeccionConsejosYCuidadosCTA/>
         <FeaturesSection />
       </main>
     </div>

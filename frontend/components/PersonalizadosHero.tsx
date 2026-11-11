@@ -36,7 +36,7 @@ export default function PersonalizadosHero() {
           <div className="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col items-center justify-center">
             
             {/* Encabezado */}
-            <div className="mb-12">
+            <div className="mb-6">
 
               <h2 className="text-2xl sm:text-4xl lg:text-4xl text-center font-bold text-[#370630] leading-tight">
                 ¿Tienes una idea en mente? <br className="hidden sm:inline" />
@@ -44,7 +44,7 @@ export default function PersonalizadosHero() {
               </h2>
             </div>
 
-            <p className="text-[#000000] text-sm sm:text-base mb-6 leading-relaxed">
+            <p className="text-[#000000] text-sm text-center sm:text-base mb-6 leading-relaxed">
               Transformamos tus ideas o personajes favoritos en piezas únicas. Puedes enviarnos una foto de referencia y describir los detalles que imaginas.
             </p>
 
@@ -103,6 +103,17 @@ export default function PersonalizadosHero() {
                 className="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-[#c54c74]/95 hover:bg-[#c54c74]/70 text-white font-medium text-sm lg:text-base text-center px-6 py-3.5 rounded-xl shadow-sm transition-all duration-200 active:scale-[0.98]"
               >
                 <span>Solicitar mi pedido personalizado</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Botón para ver la galería de pedidos personalizados */}
+            <div>
+              <Link
+                href="/galeria"
+                className=" mt-3 inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-[#627c73]/95 hover:bg-[#627c73]/70 text-white font-medium text-sm lg:text-base text-center px-6 py-3.5 rounded-xl shadow-sm transition-all duration-200 active:scale-[0.98]"
+              >
+                <span>Explora más ideas</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

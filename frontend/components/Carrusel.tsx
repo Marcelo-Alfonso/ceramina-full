@@ -55,7 +55,7 @@ export default function HeroCarousel({ images }: { images?: string[] }) {
       title: 'Guía y consejos para porcelana fría',
       description: 'Aprende las mejores técnicas para trabajar el material y los cuidados necesarios para preservar tus piezas.',
       primaryBtnText: 'Consejos',
-      primaryBtnHref: '/cuidados',
+      primaryBtnHref: '/consejos',
       secondaryBtnText: 'Cuidados',
       secondaryBtnHref: '/cuidados',
       icon: <BookOpen className="w-6 h-6 text-[#e7c3cf]" />,
@@ -107,7 +107,7 @@ export default function HeroCarousel({ images }: { images?: string[] }) {
                         className="object-cover object-center"
                         />
                         {/* Capa degradada para aplicar filtro */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#2c221e]/90 via-[#2c221e]70 to-[#2c221e]/50" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#000000]/80 via-[#000000]/60 to-[#000000]/40" />
                     </div>
                     {/* Contenido del slider */}
                     <div className="relative z-20 max-w-7xl mx-auto h-full px-6 flex justify-center items-center">

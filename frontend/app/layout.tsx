@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { Roboto } from 'next/font/google';
 
 
@@ -53,9 +54,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Obtenemos el ID de Google Analytics desde las variables de entorno
+  const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-0000000000";
   return (
     <html lang="es" className={`${roboto.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* Se carga google analytics si no es el ID de desarrollo */}
+        {GA_ID && GA_ID !== 'G-0000000000' && (
+          <GoogleAnalytics GA_MEASUREMENT_ID={GA_ID} />
+        )}
+        {children}</body>
     </html>
   );
 }

@@ -50,13 +50,14 @@ export default async function ProductsSection() {
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20 space-y-4">
-          <p className="text-[10px] font-bold text-[#FFA195] uppercase tracking-[0.4em]">
+          <p className="text-[10px] font-bold text-[#c54c74] uppercase tracking-[0.4em]">
             Hecho a mano en Arica
           </p>
-          <h3 className="text-4xl md:text-5xl font-serif text-[#756C64] tracking-tight">
+          <h3 className="text-4xl md:text-5xl font-serif text-[#370630] tracking-tight">
             Nuestra Colección
           </h3>
-          <div className="w-12 h-[1px] bg-[#E6B9B3] mx-auto mt-6" />
+          {/* separador */}
+          <div className="w-50 h-[1px] bg-[#370630] mx-auto mt-6" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
